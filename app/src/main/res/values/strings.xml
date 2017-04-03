@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">My Places</string>
+    <string name="place_picker">Place Picker</string>
+    <string name="current_place">Current Place</string>
+    <string name="auto_complete">Auto Complete</string>
+    <string name="google_app_id">AIzaSyBiCHXC-S6QyhfZuiAbYtWnFvyNUvUpsfU</string>
+    <string name="name">Name :</string>
+    <string name="phonenumber">PhoneNumber :</string>
+    <string name="rating">Rating :</string>
+    <string name="likelihood">Likelihood :</string>
+    <string name="near_by_places">Near By Places :</string>
+</resources>
