@@ -3,6 +3,8 @@ package com.example.mobility.myplaces;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -13,6 +15,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,6 +28,9 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.PlaceLikelihood;
 import com.google.android.gms.location.places.PlaceLikelihoodBuffer;
+import com.google.android.gms.location.places.PlacePhotoMetadata;
+import com.google.android.gms.location.places.PlacePhotoMetadataBuffer;
+import com.google.android.gms.location.places.PlacePhotoMetadataResult;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlacePicker;
 
@@ -40,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerview;
     ArrayList<PlaceDetails> mPlaceDetails;
     int current;
-
+    TextView latText,lngTxt;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,15 +72,15 @@ public class MainActivity extends AppCompatActivity {
         super.onStop();
     }
 
-   /* public void placePicker(View view) {
+ /*   public void placePicker(View view) {
         try {
             PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
             startActivityForResult(builder.build(this), place_picker);
         } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
             e.printStackTrace();
         }
-    }*/
-
+    }
+*/
     public void currentPlace(View view) {
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -85,31 +91,29 @@ public class MainActivity extends AppCompatActivity {
             callPlaceDetectionApi();
         }
     }
-    public void navigateNext(View view) {
 
-        TextView latText,lngTxt;
-        latText = (TextView)view.findViewById(R.id.latitude);
-        lngTxt = (TextView)view.findViewById(R.id.longitude);
-        latText.setVisibility(view.VISIBLE);
-        lngTxt.setVisibility(view.VISIBLE);
-        Toast.makeText(this, latText.getText().toString()+"lon : "+lngTxt.getText().toString(), Toast.LENGTH_SHORT).show();
-        /*double lat = Double.parseDouble(latText.getText().toString());
-        double lng = Double.parseDouble(lngTxt.getText().toString());
-        String geoUri = "http://maps.google.com/maps?q=loc:" + lat + "," + lng ;
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(geoUri));
-        startActivity(intent);*/
-
-
-    }
     private void callPlaceDetectionApi() throws SecurityException{
         PendingResult<PlaceLikelihoodBuffer> result = Places.PlaceDetectionApi.getCurrentPlace(mGoogleApiClient, null);
         result.setResultCallback(new ResultCallback<PlaceLikelihoodBuffer>() {
-
+            Place places=null;
             @Override
             public void onResult(@NonNull PlaceLikelihoodBuffer placeLikelihoods) {
                 for(PlaceLikelihood placeLikelihood :placeLikelihoods){
-                   Log.i("TAG",String.format("Place '%s' with"+"likelihood : '%g' ",placeLikelihood.getPlace().getName(),placeLikelihood.getLikelihood()));
-                   mNearByPlaces.add(new NearByPlaces((String)placeLikelihood.getPlace().getName(),(String)placeLikelihood.getPlace().getPhoneNumber(),placeLikelihood.getPlace().getRating(),placeLikelihood.getPlace().getLatLng().latitude,placeLikelihood.getPlace().getLatLng().longitude));
+                   Log.i("TAG",String.format("Place '%s' with"+"likelihood : '%g' latitude: '%g' and logitude : '%g' and id '%s'",placeLikelihood.getPlace().getName(),placeLikelihood.getLikelihood(),placeLikelihood.getPlace().getLatLng().latitude,placeLikelihood.getPlace().getLatLng().longitude,placeLikelihood.getPlace().getId()));
+                   /* PlacePhotoMetadataResult result = Places.GeoDataApi.getPlacePhotos(mGoogleApiClient, placeLikelihood.getPlace().getId()).await();
+                    PlacePhotoMetadataBuffer buffer = null;
+                    if (result != null && result.getStatus().isSuccess()) {
+                        buffer = result.getPhotoMetadata();
+                    }
+                    PlacePhotoMetadata photo = buffer.get(0);
+                    Bitmap image = photo.getPhoto(mGoogleApiClient).await().getBitmap();*/
+                   // Bitmap image = BitmapFactory.decodeResource(getResources(),R.drawable.image1);
+                   // mNearByPlaces.add(new NearByPlaces((String)placeLikelihood.getPlace().getName(),(String)placeLikelihood.getPlace().getPhoneNumber(),placeLikelihood.getPlace().getRating(),placeLikelihood.getPlace().getLatLng().latitude,placeLikelihood.getPlace().getLatLng().longitude, (String) placeLikelihood.getPlace().getAddress()));
+
+                    mNearByPlaces.add(new NearByPlaces((String)placeLikelihood.getPlace().getName(),(String)placeLikelihood.getPlace().getPhoneNumber(),placeLikelihood.getPlace().getRating(),placeLikelihood.getPlace().getLatLng().latitude,placeLikelihood.getPlace().getLatLng().longitude));
+               //places = placeLikelihood.getPlace();
+                    //places.GeoDataApi
+                   // Places.GeoDataApi.getPlacePhotos(mGoogleApiClient,places.getId()).await();
                 }
                 RecyclerView.Adapter adapter = new DataAdapter(getBaseContext(),mNearByPlaces);
                 recyclerview.setAdapter(adapter);
@@ -121,9 +125,9 @@ public class MainActivity extends AppCompatActivity {
    /*   public void autoComplete(View view) {
 
 
-    }
+    }*/
 
-  @Override
+/*  @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == place_picker){
@@ -137,9 +141,9 @@ public class MainActivity extends AppCompatActivity {
                 String rating = String.format("%s",place.getRating());
                 String phonenumber = String.format("%s",place.getPhoneNumber());
 
-                               mPlaceDetails.add(new PlaceDetails(address,placename,phonenumber,rating,latitude,longitude));
+                           //    mPlaceDetails.add(new PlaceDetails(address,placename,phonenumber,rating,latitude,longitude));
 
-                current = mPlaceDetails.get(mPlaceDetails.size()-1);
+               // current = mPlaceDetails.get(mPlaceDetails.size()-1);
 
                 stBuilder.append("Name: ");
                 stBuilder.append(placename);
@@ -158,10 +162,11 @@ public class MainActivity extends AppCompatActivity {
                 stBuilder.append("\n");
                 stBuilder.append("Phone Number: ");
                 stBuilder.append(phonenumber);
-                TextView textview = (TextView)findViewById(R.id.txtview);
-               *//* PlaceDetails placeDetails = mPlaceDetails.get(mPlaceDetails.size()-1);
+                 TextView textview = (TextView)findViewById(R.id.txtview);
+            *//*   PlaceDetails placeDetails = mPlaceDetails.get(mPlaceDetails.size()-1);
                 textview.setText("Name : "+placeDetails.getmName()+"\n"+"Address : "+placeDetails.getmAddress()+"\n"+"Phone Number : "+placeDetails.getmPhoneNumber()+"\n"+"Rating : "+placeDetails.getmRating());
-                *//*
+
+*//*
                 textview.setText(stBuilder.toString());
 
             }

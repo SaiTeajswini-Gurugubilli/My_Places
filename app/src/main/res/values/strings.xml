@@ -9,4 +9,6 @@
     <string name="rating">Rating :</string>
     <string name="likelihood">Likelihood :</string>
     <string name="near_by_places">Near By Places :</string>
+    <string name="call">Call</string>
+    <string name="favourite">Favourite</string>
 </resources>

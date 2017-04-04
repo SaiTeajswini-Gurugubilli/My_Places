@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp"
+    android:layout_marginTop="5dp">
 <RelativeLayout
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="wrap_content">
@@ -11,13 +14,14 @@
         android:id="@+id/place_name"
         android:paddingTop="10dp"
         android:layout_alignParentTop="true"
+        android:textStyle="bold"
         android:textAppearance="@style/TextAppearance.AppCompat.Subhead"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/place_name"
         android:id="@+id/place_phone" />
-    <ImageButton
+    <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
@@ -25,25 +29,25 @@
         android:layout_below="@+id/place_name"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:src="@drawable/ic_navigate_next"
-        android:onClick="navigateNext"/>
+        android:background="@drawable/ic_navigate_next"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
-        android:layout_below="@+id/place_phone"
-        android:id="@+id/longitude"/>
+        android:id="@+id/longitude"
+        android:visibility="invisible"
+        android:layout_below="@+id/place_phone" />
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
-        android:layout_below="@+id/place_phone"
+        android:visibility="invisible"
+        android:layout_below="@+id/longitude"
         android:id="@+id/latitude"/>
        <RatingBar
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
            android:layout_below="@id/imagebtn"
            android:layout_alignParentRight="true"
+           style="?android:attr/ratingBarStyleSmall"
         android:id="@+id/rating"
         android:max="5"/>
 
