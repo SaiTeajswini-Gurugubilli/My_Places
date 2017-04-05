@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,14 +23,15 @@ import com.google.android.gms.location.places.PlacePhotoMetadataBuffer;
 import com.google.android.gms.location.places.PlacePhotoMetadataResult;
 import com.google.android.gms.location.places.Places;
 
-import java.util.ArrayList;
+import org.w3c.dom.Text;
 
-/**
- * Created by Mobility on 03/04/17.
- */
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Locale;
+
 
 public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
-    private  ArrayList<NearByPlaces> nearByPlacesArrayList;
+    private ArrayList<NearByPlaces> nearByPlacesArrayList;
     private Context mContext;
    /* private Place mPlace;
     private GoogleApiClient mGoogleApiClient;*/
@@ -43,26 +45,23 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.nearby_list,viewGroup,false);
+        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.nearby_list, viewGroup, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(DataAdapter.ViewHolder holder, int position) {
         NearByPlaces currentObject = nearByPlacesArrayList.get(position);
-        if(currentObject.getRating()>=0 &&currentObject.getRating()<=5){
+        if (currentObject.getRating() >= 0 && currentObject.getRating() <= 5) {
             //holder.placeRating.setNumStars((int) currentObject.getRating());
             holder.placeRating.setRating(currentObject.getRating());
-        }else{
+        } else {
             //holder.placeRating.setNumStars(0);
             holder.placeRating.setRating(0);
         }
         holder.placeName.setText(currentObject.getPlaceName());
-       // holder.placePhonenumber.setText(currentObject.getPhoneNumber());
+        holder.placeAddress.setText(currentObject.getAddress());
         holder.placePhonenumber.setText(currentObject.getPhoneNumber());
-        holder.latitude.setText(String.valueOf( currentObject.getLatitude()));
-        holder.longitude.setText(String.valueOf(currentObject.getLongitude()));
-
     }
 
     @Override
@@ -71,53 +70,64 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
     }
 
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-       TextView placeName;
-       // TextView placeLikelihood;
+        TextView placeName;
+        TextView placeAddress;
         TextView placePhonenumber;
         RatingBar placeRating;
-        TextView latitude,longitude;
+        //TextView latitude,longitude;
         Button imgbtn;
+
         ViewHolder(View view) {
             super(view);
-           view.setOnClickListener(this);
+            view.setOnClickListener(this);
 
-           placePhonenumber = (TextView)view.findViewById(R.id.place_phone);
+            placePhonenumber = (TextView) view.findViewById(R.id.place_phone);
             placeRating = (RatingBar) view.findViewById(R.id.rating);
-            placeName = (TextView)view.findViewById(R.id.place_name);
-            latitude = (TextView)view.findViewById(R.id.latitude);
-            longitude = (TextView)view.findViewById(R.id.longitude);
-            imgbtn = (Button)view.findViewById(R.id.imagebtn);
+            placeName = (TextView) view.findViewById(R.id.place_name);
+            imgbtn = (Button) view.findViewById(R.id.imagebtn);
+            placeAddress = (TextView) view.findViewById(R.id.place_address);
             imgbtn.setOnClickListener(this);
-           // placeLikelihood = (TextView)view.findViewById(R.id.place_likelihood);
+            // placeLikelihood = (TextView)view.findViewById(R.id.place_likelihood);
 
         }
 
         @Override
         public void onClick(View v) {
-            if(v.getId() == R.id.imagebtn) {
+            if (v.getId() == R.id.imagebtn) {
                 NearByPlaces currentplace = nearByPlacesArrayList.get(getAdapterPosition());
                 double lat, lng;
+
                 lat = currentplace.getLatitude();
                 lng = currentplace.getLongitude();
-                String geoUri = "http://maps.google.com/maps?q=loc:" + lat + "," + lng;
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(geoUri));
+                String uri = String.format(Locale.getDefault(), "http://maps.google.com/maps?daddr=%f,%f", lat, lng);
+                Toast.makeText(mContext, String.valueOf(currentplace.getPhoneNumber()), Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                Toast.makeText(mContext, String.valueOf(nearByPlacesArrayList.size()), Toast.LENGTH_SHORT).show();
                 mContext.startActivity(intent);
-            }             /*   Intent intent = new Intent(mContext, SelectedPlaceDetails.class);
-else {
+            } else {
+                Intent intent = new Intent(mContext, SelectedPlaceDetails.class);
                 NearByPlaces currentplace = nearByPlacesArrayList.get(getAdapterPosition());
                 String address = currentplace.getAddress();
-                String phonenumber =  currentplace.getPhoneNumber();
+                String phonenumber = currentplace.getPhoneNumber();
                 //Bitmap image =currentplace.getPlaceImage();
                 String name = currentplace.getPlaceName();
+                String website = String.valueOf(currentplace.getWebsiteUri());
+                float rating = currentplace.getRating();
+                String placeid = currentplace.getPlaceId();
+
+                Toast.makeText(mContext,String.valueOf(rating), Toast.LENGTH_SHORT).show();
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-               //intent.putExtra("image",image);
-                intent.putExtra("name",name);
-                intent.putExtra("Address",address);
-                intent.putExtra("phone",phonenumber);
-                mContext.startActivity(intent);*/
+                //intent.putExtra("image",image);
+                intent.putExtra("name", name);
+                intent.putExtra("phone", phonenumber);
+                intent.putExtra("address",address);
+                intent.putExtra("websiteUri",website);
+                intent.putExtra("rating",String.valueOf(rating));
+                intent.putExtra("id",placeid);
+
+                mContext.startActivity(intent);
             }
         }
     }
+}
 

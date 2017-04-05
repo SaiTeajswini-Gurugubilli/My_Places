@@ -1,10 +1,8 @@
 package com.example.mobility.myplaces;
 
 import android.Manifest;
-import android.content.Intent;
+
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -12,41 +10,29 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
-import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.PlaceLikelihood;
 import com.google.android.gms.location.places.PlaceLikelihoodBuffer;
-import com.google.android.gms.location.places.PlacePhotoMetadata;
-import com.google.android.gms.location.places.PlacePhotoMetadataBuffer;
-import com.google.android.gms.location.places.PlacePhotoMetadataResult;
 import com.google.android.gms.location.places.Places;
-import com.google.android.gms.location.places.ui.PlacePicker;
+
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    int place_picker = 1000;
+   // int place_picker = 1000;
     int permission_request_code= 100;
     private GoogleApiClient mGoogleApiClient;
-    private TextView textview;
+    //private TextView textview;
     ArrayList<NearByPlaces> mNearByPlaces;
     private RecyclerView recyclerview;
-    ArrayList<PlaceDetails> mPlaceDetails;
-    int current;
-    TextView latText,lngTxt;
+   // ArrayList<PlaceDetails> mPlaceDetails;
+   // int current;
+    //TextView latText,lngTxt;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},permission_request_code);
-            return;
+
         }else {
             callPlaceDetectionApi();
         }
@@ -95,25 +81,35 @@ public class MainActivity extends AppCompatActivity {
     private void callPlaceDetectionApi() throws SecurityException{
         PendingResult<PlaceLikelihoodBuffer> result = Places.PlaceDetectionApi.getCurrentPlace(mGoogleApiClient, null);
         result.setResultCallback(new ResultCallback<PlaceLikelihoodBuffer>() {
-            Place places=null;
+            //Place places=null;
             @Override
             public void onResult(@NonNull PlaceLikelihoodBuffer placeLikelihoods) {
                 for(PlaceLikelihood placeLikelihood :placeLikelihoods){
                    Log.i("TAG",String.format("Place '%s' with"+"likelihood : '%g' latitude: '%g' and logitude : '%g' and id '%s'",placeLikelihood.getPlace().getName(),placeLikelihood.getLikelihood(),placeLikelihood.getPlace().getLatLng().latitude,placeLikelihood.getPlace().getLatLng().longitude,placeLikelihood.getPlace().getId()));
-                   /* PlacePhotoMetadataResult result = Places.GeoDataApi.getPlacePhotos(mGoogleApiClient, placeLikelihood.getPlace().getId()).await();
+
+                    /*PlacePhotoMetadataResult result = Places.GeoDataApi.getPlacePhotos(mGoogleApiClient, placeLikelihood.getPlace().getId()).await();
                     PlacePhotoMetadataBuffer buffer = null;
                     if (result != null && result.getStatus().isSuccess()) {
                         buffer = result.getPhotoMetadata();
                     }
                     PlacePhotoMetadata photo = buffer.get(0);
-                    Bitmap image = photo.getPhoto(mGoogleApiClient).await().getBitmap();*/
-                   // Bitmap image = BitmapFactory.decodeResource(getResources(),R.drawable.image1);
-                   // mNearByPlaces.add(new NearByPlaces((String)placeLikelihood.getPlace().getName(),(String)placeLikelihood.getPlace().getPhoneNumber(),placeLikelihood.getPlace().getRating(),placeLikelihood.getPlace().getLatLng().latitude,placeLikelihood.getPlace().getLatLng().longitude, (String) placeLikelihood.getPlace().getAddress()));
-
-                    mNearByPlaces.add(new NearByPlaces((String)placeLikelihood.getPlace().getName(),(String)placeLikelihood.getPlace().getPhoneNumber(),placeLikelihood.getPlace().getRating(),placeLikelihood.getPlace().getLatLng().latitude,placeLikelihood.getPlace().getLatLng().longitude));
-               //places = placeLikelihood.getPlace();
+                    Bitmap image = photo.getPhoto(mGoogleApiClient).await().getBitmap();
+                    Bitmap image = BitmapFactory.decodeResource(getResources(),R.drawable.image1);
+                     //places = placeLikelihood.getPlace();
                     //places.GeoDataApi
-                   // Places.GeoDataApi.getPlacePhotos(mGoogleApiClient,places.getId()).await();
+                   // Places.GeoDataApi.getPlacePhotos(mGoogleApiClient,places.getId()).await();*/
+
+                    String name = (String)placeLikelihood.getPlace().getName();
+                    String number = (String)placeLikelihood.getPlace().getPhoneNumber();
+                    float rating = placeLikelihood.getPlace().getRating();
+                    double latitude = placeLikelihood.getPlace().getLatLng().latitude;
+                    double longitude = placeLikelihood.getPlace().getLatLng().longitude;
+                    String address = (String) placeLikelihood.getPlace().getAddress();
+                    String id = placeLikelihood.getPlace().getId();
+                    Uri website = placeLikelihood.getPlace().getWebsiteUri();
+                    mNearByPlaces.add(new NearByPlaces(name,number,rating,latitude,longitude,address,id,website));
+                   // mNearByPlaces.add(new NearByPlaces((String)placeLikelihood.getPlace().getName(),(String)placeLikelihood.getPlace().getPhoneNumber(),placeLikelihood.getPlace().getRating(),placeLikelihood.getPlace().getLatLng().latitude,placeLikelihood.getPlace().getLatLng().longitude,(String)placeLikelihood.getPlace().getAddress(),placeLikelihood.getPlace().getId(),placeLikelihood.getPlace().getWebsiteUri()));
+
                 }
                 RecyclerView.Adapter adapter = new DataAdapter(getBaseContext(),mNearByPlaces);
                 recyclerview.setAdapter(adapter);

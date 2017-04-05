@@ -11,4 +11,13 @@
     <string name="near_by_places">Near By Places :</string>
     <string name="call">Call</string>
     <string name="favourite">Favourite</string>
+    <string name="website">Website</string>
+    <string name="description_favourite">Make favourite</string>
+    <string name="website_place_website">place_website</string>
+    <string name="description_call">Description Call</string>
+    <string name="website_null_msg">No URL is Provided</string>
+    <string name="place_name">Name</string>
+    <string name="place_rating">Rating</string>
+    <string name="phone_number">PhoneNumber</string>
+    <string name="place_url">URL</string>
 </resources>
